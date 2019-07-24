@@ -18,9 +18,15 @@ module Avatax
 
     namespace :batches
 
+    namespace :certificate_requests
+
+    namespace :certificates
+
     namespace :companies
 
     namespace :contacts
+
+    namespace :customers
 
     namespace :definitions
 
