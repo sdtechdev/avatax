@@ -21,6 +21,17 @@ module Avatax
         resp = connection.get "/api/v2/companies/#{company_code}/certificates/#{certificate_id}", args
         handle_response(resp)
       end
+
+      ##
+      # List certificate exposure zones
+      # @see https://developer.avalara.com/api-reference/avatax/rest/v2/methods/Definitions/ListCertificateExposureZones/
+      #
+      # @return [Avatax::Response]
+      #
+      def exposure_zones
+        resp = connection.get '/api/v2/definitions/certificateexposurezones'
+        handle_response(resp)
+      end
     end
   end
 end
