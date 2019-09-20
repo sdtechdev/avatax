@@ -58,6 +58,8 @@ module Avatax
       @configuration = Avatax::Configuration.new(args)
 
       @connection = Faraday.new(url: @configuration.base_url) do |conn|
+        conn.request :retry, max: @retry_limit
+        conn.options[:timeout] = @timeout
         conn.request :json
         conn.request(
           :basic_auth,
