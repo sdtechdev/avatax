@@ -21,6 +21,8 @@ module Avatax
 
       @username = args[:username]
       @password = args[:password]
+      @retry_limit = args[:retry]
+      @timeout = args[:timeout]
     end
 
     private
