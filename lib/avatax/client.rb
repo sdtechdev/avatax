@@ -56,10 +56,11 @@ module Avatax
 
     def initialize(args = {})
       @configuration = Avatax::Configuration.new(args)
-
+      
+      retry_exceptions = @retry_exceptions.to_a + Faraday::Request::Retry::Options.new.exceptions
       @connection = Faraday.new(url: @configuration.base_url) do |conn|
-        conn.request :retry, max: @retry_limit
-        conn.options[:timeout] = @timeout
+        conn.request :retry, max: @retry_limit, exceptions: retry_exceptions if @retry_limit
+        conn.options[:timeout] = @timeout if @timeout
         conn.request :json
         conn.request(
           :basic_auth,
