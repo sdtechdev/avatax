@@ -72,6 +72,7 @@ module Avatax
 
         conn.request :retry, retry_options if retry_options.present?
         conn.options[:timeout] = @configuration.timeout if @configuration.timeout
+        conn.response :raise_error
 
         conn.adapter  Faraday.default_adapter
       end
@@ -90,8 +91,13 @@ module Avatax
     end
 
     def retry_exceptions
-      @configuration.retry_exceptions.to_a +
-      Faraday::Request::Retry::Options.new.exceptions
+      exceptions_list = []
+
+      exceptions_list += @configuration.retry_exceptions.to_a
+      exceptions_list += Faraday::Request::Retry::Options.new.exceptions
+      exceptions_list += [Faraday::ServerError]
+
+      exceptions_list
     end
 
     def retry_options
