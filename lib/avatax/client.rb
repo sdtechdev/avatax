@@ -56,11 +56,8 @@ module Avatax
 
     def initialize(args = {})
       @configuration = Avatax::Configuration.new(args)
-      
-      retry_exceptions = @retry_exceptions.to_a + Faraday::Request::Retry::Options.new.exceptions
+
       @connection = Faraday.new(url: @configuration.base_url) do |conn|
-        conn.request :retry, max: @retry_limit, exceptions: retry_exceptions if @retry_limit
-        conn.options[:timeout] = @timeout if @timeout
         conn.request :json
         conn.request(
           :basic_auth,
@@ -72,6 +69,10 @@ module Avatax
 
         conn.response :json
         conn.response :logger
+
+        conn.request :retry, retry_options if retry_options.present?
+        conn.options[:timeout] = @configuration.timeout if @configuration.timeout
+        conn.response :raise_error
 
         conn.adapter  Faraday.default_adapter
       end
@@ -86,6 +87,27 @@ module Avatax
       namespaces.each do |klass|
         reader = klass.to_s.split('::').last.underscore
         self.class.send(:define_method, reader.to_sym) { klass.new @connection }
+      end
+    end
+
+    def retry_exceptions
+      exceptions_list = []
+
+      exceptions_list += @configuration.retry_exceptions.to_a
+      exceptions_list += Faraday::Request::Retry::Options.new.exceptions
+      exceptions_list += [Faraday::ServerError]
+
+      exceptions_list
+    end
+
+    def retry_options
+      @_retry_options ||= begin
+        if @configuration.retry_limit
+          {
+            max: @configuration.retry_limit,
+            exceptions: retry_exceptions
+          }
+        end
       end
     end
   end

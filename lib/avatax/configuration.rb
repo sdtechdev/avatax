@@ -1,6 +1,7 @@
 module Avatax
   class Configuration
-    attr_reader :sandbox, :base_url, :env, :username, :password, :headers
+    attr_reader :sandbox, :base_url, :env, :username, :password,
+                :headers, :retry_limit, :retry_exceptions, :timeout
 
     REST_URLS = {
       sandbox:    'https://sandbox-rest.avatax.com',
