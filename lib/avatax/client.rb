@@ -72,7 +72,7 @@ module Avatax
 
         conn.request :retry, retry_options if retry_options.present?
         conn.options[:timeout] = @configuration.timeout if @configuration.timeout
-        conn.response :raise_error
+        conn.use Avatax::Response::RaiseError
 
         conn.adapter  Faraday.default_adapter
       end
