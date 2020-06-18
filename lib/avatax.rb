@@ -5,6 +5,7 @@ require 'faraday_middleware'
 require 'avatax/version'
 require 'avatax/code'
 require 'avatax/response'
+require 'avatax/response/raise_error'
 
 require 'avatax/api/base'
 require 'avatax/api/accounts'
